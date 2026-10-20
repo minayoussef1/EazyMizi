@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#3d6bff">
+<title>EasyMizi</title>
+<style>
+:root{--bg:#f2f2f7;--card:#fff;--tx:#000;--mut:#8e8e93;--sep:#e5e5ea;--blue:#3d6bff;--green:#34c759;--red:#ff3b30;--orange:#ff9500;--purple:#af52de}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,"SF Arabic","Segoe UI",Tahoma,sans-serif;-webkit-font-smoothing:antialiased;direction:rtl}
+button,input,select{font:inherit}
+.wrap{max-width:440px;margin:auto;min-height:100dvh;padding-bottom:130px}
+.hero{background:linear-gradient(160deg,#5b86ff,#3d6bff);color:#fff;border-radius:0 0 32px 32px;padding:calc(env(safe-area-inset-top,0px) + 16px) 18px 18px;position:relative;overflow:hidden}
+.hero .top{display:flex;justify-content:space-between;font-size:13px;opacity:.9}
+.hero h1{font-size:26px;font-weight:700;margin:8px 0 14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+.chip{background:rgba(255,255,255,.22);border-radius:20px;padding:8px 14px;font-size:14px;font-weight:600}
+.ringpill{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.18);border-radius:24px;padding:12px 14px;margin-top:12px;font-size:15px}
+.ring{width:38px;height:38px;border-radius:50%;background:conic-gradient(#fff var(--d,0deg),rgba(255,255,255,.3) 0);position:relative;flex:0 0 38px}
+.ring:after{content:"";position:absolute;inset:6px;border-radius:50%;background:#4f78f5}
+.hero-foot{display:flex;justify-content:space-between;align-items:center;width:calc(100% + 36px);margin:18px -18px -18px;padding:14px 18px;border:0;background:rgba(255,255,255,.16);color:#fff;font-size:15px;cursor:pointer}
+.group{background:var(--card);border-radius:20px;margin:16px 16px 0;overflow:hidden}
+.row{display:flex;align-items:center;gap:12px;width:100%;padding:14px 16px;border:0;border-bottom:.5px solid var(--sep);background:none;color:inherit;text-align:right;font-size:17px;min-height:52px}
+.row:last-child{border-bottom:0}
+button.row{cursor:pointer}
+.row .lbl{flex:1}
+.row .lbl small{display:block;font-size:12px;color:var(--mut);margin-top:2px}
+.row .val{font-weight:500;white-space:nowrap}
+.row .chev{color:#c7c7cc;font-size:20px;margin-right:2px}
+.ic{width:24px;height:24px;flex:0 0 24px}
+.emo{font-size:24px;width:28px;text-align:center}
+.del{border:0;background:none;color:var(--red);font-size:15px;cursor:pointer}
+.tabbar{position:fixed;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);left:50%;transform:translateX(-50%);width:min(400px,calc(100% - 24px));display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:8px;background:rgba(255,255,255,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:28px;box-shadow:0 8px 30px rgba(0,0,0,.12);z-index:5}
+.tab{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 0;border-radius:18px;font-size:11px;color:var(--mut);cursor:pointer}
+.tab .ic{width:26px;height:26px;flex-basis:26px}
+.tab.on{color:var(--blue);background:#e8efff}
+.view{display:none}.view.on{display:block}
+.ptitle{font-size:34px;font-weight:700;margin:0;padding:calc(env(safe-area-inset-top,0px) + 20px) 20px 0}
+.pad{padding:16px}
+.lab{display:block;font-size:13px;color:var(--mut);margin:12px 0 6px}
+.lab:first-child{margin-top:0}
+.in{width:100%;border:0;background:var(--bg);border-radius:12px;padding:13px;font-size:17px;color:var(--tx);text-align:right}
+.inrow{display:flex;gap:8px}.inrow .in{flex:1}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{width:100%;border:0;background:var(--blue);color:#fff;border-radius:14px;padding:15px;font-size:17px;font-weight:600;margin-top:14px;cursor:pointer}
+.btn.sm{width:auto;margin:0;padding:0 18px}
+.btn.gray{background:#e5e5ea;color:var(--blue)}
+.note{font-size:13px;color:var(--mut);line-height:1.7;margin:12px 0 0}
+.bars{display:flex;align-items:flex-end;gap:8px;height:150px;padding:28px 16px 12px}
+.bar{flex:1;background:linear-gradient(#5b86ff,#3d6bff);border-radius:8px 8px 4px 4px;position:relative;min-height:20px}
+.bar span{position:absolute;top:-18px;left:0;right:0;text-align:center;font-size:11px;color:var(--mut)}
+.toast{position:fixed;top:calc(env(safe-area-inset-top,0px) + 14px);left:50%;transform:translateX(-50%);background:rgba(0,0,0,.82);color:#fff;padding:10px 18px;border-radius:14px;font-size:14px;display:none;z-index:9;max-width:90%;text-align:center}
+
+/* mascot */
+.mascot{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:20px;margin:16px 16px 0;padding:10px 14px}
+.vita{width:130px;flex:0 0 130px;animation:bob 2.6s ease-in-out infinite}
+.vita svg{width:100%;height:auto;display:block}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.wave{animation:wave 1.1s ease-in-out infinite}
+@keyframes wave{0%,100%{transform:rotate(0)}50%{transform:rotate(-28deg)}}
+.blink{transform-origin:100px 42px;animation:blink 4s infinite}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+.bubble{flex:1;background:#e8efff;color:#1d3a8a;border-radius:18px;padding:12px 14px;font-size:15px;line-height:1.7;position:relative}
+/* dishes */
+.dishes{margin-top:8px;border-radius:12px;background:var(--bg);overflow:hidden}
+.dishes:empty{display:none}
+.dish{display:flex;justify-content:space-between;align-items:center;width:100%;padding:11px 12px;border:0;border-bottom:.5px solid var(--sep);background:none;color:inherit;font-size:15px;cursor:pointer;text-align:right}
+.dish:last-child{border-bottom:0}
+.dish small{color:var(--mut)}
+.dishes .note{padding:12px}
+textarea.in{resize:vertical;font-family:ui-monospace,Menlo,monospace;font-size:14px;direction:ltr;text-align:left}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <section id="home" class="view on">
+    <header class="hero">
+      <div class="top"><span id="dateTxt"></span><span>EasyMizi</span></div>
+      <h1>ملخص يومك</h1>
+      <div class="chips" id="chips"></div>
+      <div class="ringpill"><span id="pctTxt"></span><span class="ring" id="ring"></span></div>
+      <button class="hero-foot" onclick="go('meals')"><span>عرض تفاصيل اليوم</span><span>‹</span></button>
+    </header>
+    <div class="mascot"><div id="vita" class="vita"></div><div id="bubble" class="bubble"></div></div>
+    <div class="group" id="g1"></div>
+    <div class="group" id="g2"></div>
+    <div class="group" id="g3"></div>
+  </section>
+
+  <section id="meals" class="view">
+    <h2 class="ptitle">الوجبات</h2>
+    <div class="group" id="mealList"></div>
+    <div class="pad"><button class="btn" onclick="go('add')">＋ إضافة وجبة</button><button class="btn gray" onclick="undoRemove()">تراجع عن آخر حذف</button></div>
+  </section>
+
+  <section id="add" class="view">
+    <h2 class="ptitle">إضافة وجبة</h2>
+    <div class="group">
+      <div class="row" onclick="copyPhotoPrompt()">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="#3d6bff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="3"/><circle cx="12" cy="13" r="4"/><path d="M8 7l2-3h4l2 3"/></svg>
+        <span class="lbl">صوّر الأكل واطلب تحليله من أي AI</span><span class="chev">‹</span>
+      </div>
+    </div>
+    <div class="group pad">
+      <span class="lab">ابحث عن أكلة مصرية</span><input id="dishSearch" class="in" placeholder="فول، كشري، طعمية..." oninput="renderDishes()"><div id="dishList" class="dishes"></div>
+      <span class="lab">أو اكتب اسم الأكل</span><input id="foodName" class="in" placeholder="مثال: كشري متوسط">
+      <div class="two">
+        <div><span class="lab">السعرات</span><input id="foodCalories" class="in" type="number" min="0" placeholder="550"></div>
+        <div><span class="lab">نوع الوجبة</span><select id="mealType" class="in"><option>فطار</option><option>غداء</option><option>عشاء</option><option>سناك</option></select></div>
+      </div>
+      <div class="two" style="grid-template-columns:1fr 1fr 1fr">
+        <div><span class="lab">بروتين</span><input id="foodP" class="in" type="number" min="0" placeholder="جم"></div>
+        <div><span class="lab">كارب</span><input id="foodC" class="in" type="number" min="0" placeholder="جم"></div>
+        <div><span class="lab">دهون</span><input id="foodF" class="in" type="number" min="0" placeholder="جم"></div>
+      </div>
+      <button class="btn" onclick="addMeal()">حفظ الوجبة</button>
+      <p class="note">أرقام السعرات تقديرية، وخصوصًا الزيت والصلصات.</p>
+    </div>
+  <div class="group pad" id="aiBox" style="margin-top:16px">
+    <span class="lab">رجّع رد الـAI هنا (JSON)</span>
+    <textarea id="aiJson" class="in" rows="3" placeholder='{"name":"..."}'></textarea>
+    <button class="btn gray" onclick="importAI()">تعبئة الحقول من الرد</button>
+  </div>
+  </section>
+  <section id="progress" class="view">
+    <h2 class="ptitle">التقدم</h2>
+    <div class="group pad">
+      <span class="lab">وزنك اليوم (كجم)</span>
+      <div class="inrow"><input id="weight" class="in" type="number" step=".1" placeholder="85.5"><button class="btn sm" onclick="saveWeight()">حفظ</button></div>
+    </div>
+    <div class="group"><div id="wChart"></div></div>
+    <div class="group" id="wProg"></div>
+    <div class="group" id="wHist"></div>
+  </section>
+
+  <section id="settings" class="view">
+    <h2 class="ptitle">الإعدادات</h2>
+    <div class="group pad">
+      <span class="lab">النوع</span>
+      <select id="gender" class="in"><option value="">اختر</option><option value="f">أنثى</option><option value="m">ذكر</option></select>
+      <div class="two">
+        <div><span class="lab">العمر</span><input id="age" class="in" type="number" placeholder="سنة"></div>
+        <div><span class="lab">الطول (سم)</span><input id="height" class="in" type="number" placeholder="سم"></div>
+      </div>
+      <div class="two">
+        <div><span class="lab">الوزن (كجم)</span><input id="pWeight" class="in" type="number" step=".1"></div>
+        <div><span class="lab">الوزن المستهدف</span><input id="target" class="in" type="number" step=".1"></div>
+      </div>
+      <span class="lab">نشاطك اليومي</span>
+      <select id="activity" class="in"><option value="low">قليل الحركة</option><option value="medium">نشاط متوسط</option><option value="high">نشاط مرتفع</option></select>
+      <span class="lab">شكل الشخصية (اختياري)</span><select id="buildOverride" class="in"><option value="">تلقائي حسب قياساتك</option><option value="slim">نحيف</option><option value="standard">متوسط</option><option value="sturdy">قوي البنية</option></select>
+      <span class="lab">هدفك</span>
+      <select id="goal" class="in"><option value="habits">تحسين العادات تدريجيًا</option><option value="loss">خسارة وزن تدريجية</option><option value="maintain">الحفاظ على الوزن</option></select>
+      <button class="btn" onclick="saveProfile()">حفظ</button>
+      <p class="note">الهدف تقدير مبدئي بمعادلة Mifflin-St Jeor مع حد أدنى آمن (1200 أنثى / 1500 ذكر)، ويُفضّل مراجعته مع مختص قبل أي تغيير كبير.</p>
+    </div>
+    <div class="group pad"><span class="lab">نسخة احتياطية</span><textarea id="dataBox" class="in" rows="3" placeholder="هنا هتظهر النسخة، أو الصق نسخة قديمة"></textarea><div class="inrow" style="margin-top:10px"><button class="btn sm gray" onclick="exportBox()">تصدير</button><button class="btn sm" onclick="importBox()">استيراد</button></div></div>
+    <div class="group"><button class="row" onclick="clearData()"><span class="lbl" style="color:var(--red)">مسح كل بياناتي</span></button></div>
+  </section>
+</div>
+
+<nav class="tabbar">
+  <button class="tab on" data-v="home" onclick="go('home')"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>الرئيسية</button>
+  <button class="tab" data-v="meals" onclick="go('meals')"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>الوجبات</button>
+  <button class="tab" data-v="progress" onclick="go('progress')"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>التقدم</button>
+  <button class="tab" data-v="settings" onclick="go('settings')"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg>الإعدادات</button>
+</nav>
+<div id="toast" class="toast"></div>
+
+<script>
+/* Vitalis core: منطق البيانات والحسابات بدون أي واجهة.
+   كل الدوال نقية (pure) تقريبًا وتتختبر بـ node. */
+(function (root) {
+  'use strict';
+  const VERSION = 2;
+  const TYPES = ['فطار', 'غداء', 'عشاء', 'سناك'];
+  const MAIN = ['فطار', 'غداء', 'عشاء'];
+  const FLOOR = { f: 1200, m: 1500 };          // حد أدنى آمن للسعرات
+  const KCAL_PER_KG = 7700;
+  const PORTIONS = { small: 0.6, medium: 1, large: 1.5 };
+
+  // قاعدة الأكل المصري: سعرات تقريبية لحصة متوسطة (قابلة للتعديل من الجدول)
+  const DISHES = [
+    { id: 'ful-oil', name: 'فول بالزيت', kcal: 250, type: 'فطار' },
+    { id: 'ful-tahina', name: 'فول بالطحينة والعيش', kcal: 380, type: 'فطار' },
+    { id: 'taameya-3', name: 'طعمية (3 قطع)', kcal: 220, type: 'فطار' },
+    { id: 'taameya-sand', name: 'ساندوتش طعمية', kcal: 350, type: 'فطار' },
+    { id: 'eggs-2', name: 'بيض مقلي (بيضتين)', kcal: 200, type: 'فطار' },
+    { id: 'qareesh', name: 'جبنة قريش وطماطم', kcal: 150, type: 'فطار' },
+    { id: 'koshari-m', name: 'كشري وسط', kcal: 450, type: 'غداء' },
+    { id: 'koshari-s', name: 'كشري صغير', kcal: 300, type: 'غداء' },
+    { id: 'mahshi', name: 'محشي (4 قطع)', kcal: 320, type: 'غداء' },
+    { id: 'molokhia', name: 'ملوخية بالفراخ والأرز', kcal: 520, type: 'غداء' },
+    { id: 'sheariya', name: 'أرز بالشعرية', kcal: 350, type: 'غداء' },
+    { id: 'grilled', name: 'فراخ مشوية وأرز', kcal: 600, type: 'غداء' },
+    { id: 'hawawshi', name: 'حواوشي', kcal: 450, type: 'غداء' },
+    { id: 'fatta', name: 'فتة', kcal: 650, type: 'غداء' },
+    { id: 'moussaka', name: 'مسقعة', kcal: 400, type: 'غداء' },
+    { id: 'hamam', name: 'حمام محشي', kcal: 500, type: 'غداء' },
+    { id: 'shawarma', name: 'شاورما فراخ', kcal: 550, type: 'سناك' },
+    { id: 'fiteer', name: 'فطير مشلتت (شريحة)', kcal: 350, type: 'سناك' },
+    { id: 'salad', name: 'سلطة بلدي', kcal: 80, type: 'سناك' },
+    { id: 'dates', name: 'تمر (5 حبات)', kcal: 140, type: 'سناك' },
+    { id: 'balila', name: 'بليلة', kcal: 400, type: 'سناك' },
+    { id: 'om-ali', name: 'أم علي (حصة)', kcal: 600, type: 'سناك' }
+  ];
+
+  // ---------- أدوات عامة ----------
+  const pad = n => String(n).padStart(2, '0');
+  const dayKey = (d = new Date()) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  const addDays = (key, n) => { const [y, m, d] = key.split('-').map(Number); return dayKey(new Date(y, m - 1, d + n)); };
+  const daysBetween = (a, b) => {
+    const p = k => { const [y, m, d] = k.split('-').map(Number); return new Date(y, m - 1, d); };
+    return Math.round((p(b) - p(a)) / 86400000);
+  };
+  const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+  const clamp = (x, max) => { const v = Number(x); return Number.isFinite(v) && v > 0 ? Math.min(max, Math.round(v)) : 0; };
+  // تطبيع للبحث العربي: بيشيل التشكيل ويوحّد الألف والياء والتاء المربوطة
+  const normalizeAr = s => String(s || '').toLowerCase()
+    .replace(/[\u064B-\u065F\u0670]/g, '').replace(/[إأآ]/g, 'ا')
+    .replace(/ى/g, 'ي').replace(/ة/g, 'ه').replace(/\s+/g, ' ').trim();
+
+  // ---------- الملف الشخصي والأهداف ----------
+  function validateProfile(p) {
+    const e = [];
+    if (!['f', 'm'].includes(p.gender)) e.push('حدد النوع');
+    const age = +p.age; if (!(age >= 18 && age <= 90)) e.push('العمر لازم يكون بين 18 و90');
+    const h = +p.height; if (!(h >= 120 && h <= 230)) e.push('الطول بين 120 و230 سم');
+    const w = +p.weight; if (!(w >= 30 && w <= 300)) e.push('الوزن بين 30 و300 كجم');
+    if (!['low', 'medium', 'high'].includes(p.activity)) e.push('حدد مستوى النشاط');
+    if (!['habits', 'loss', 'maintain'].includes(p.goal)) e.push('حدد الهدف');
+    if (p.goal === 'loss') {
+      const tw = +p.target;
+      if (!(tw > 0)) e.push('حدد الوزن المستهدف');
+      else if (tw >= w) e.push('الوزن المستهدف لازم يكون أقل من وزنك الحالي');
+    }
+    return e;
+  }
+
+  function calcTargets(p) {
+    const errors = validateProfile(p);
+    if (errors.length) return { errors };
+    const w = +p.weight, h = +p.height, a = +p.age;
+    const bmr = 10 * w + 6.25 * h - 5 * a + (p.gender === 'm' ? 5 : -161);
+    const tdee = bmr * { low: 1.2, medium: 1.45, high: 1.7 }[p.activity];
+    const warnings = [];
+    let kcal = tdee, rate = 0, weeks = null;
+    if (p.goal === 'loss') {
+      const tw = +p.target;
+      kcal = tdee - 500;                               // عجز ~0.45 كجم/أسبوع
+      if (kcal < FLOOR[p.gender]) {
+        kcal = FLOOR[p.gender];
+        warnings.push(`عشان نحافظ على أمانك الحد الأدنى ${FLOOR[p.gender]} سعرة. ممكن تطوّل المدة بدل ما تنزل أكتر.`);
+      }
+      rate = Math.max(0, (tdee - kcal) * 7 / KCAL_PER_KG);
+      weeks = rate > 0 ? Math.ceil((w - tw) / rate) : null;
+      if (tw / ((h / 100) ** 2) < 18.5) warnings.push('الوزن المستهدف أقل من النطاق الصحي لطولك، راجع الهدف مع مختص.');
+    }
+    kcal = Math.round(kcal);
+    const protein = Math.round(w * (p.goal === 'loss' ? 1.6 : 1.2));
+    const fat = Math.round(kcal * 0.25 / 9);
+    const carbs = Math.max(0, Math.round((kcal - protein * 4 - fat * 9) / 4));
+    return { errors: [], bmr: Math.round(bmr), tdee: Math.round(tdee), calories: kcal, protein, carbs, fat,
+      rateKgPerWeek: Math.round(rate * 100) / 100, weeksToTarget: weeks, warnings };
+  }
+
+  // ---------- الوجبات ----------
+  function makeMeal(input, day) {
+    const name = String(input.name || '').trim();
+    const cal = Number(input.cal ?? input.calories);
+    const errors = [];
+    if (!name || name.length > 80) errors.push('اكتب اسم الأكلة (حتى 80 حرف)');
+    if (!(cal >= 0 && cal <= 3000)) errors.push('السعرات لازم تكون بين 0 و3000');
+    if (errors.length) return { errors };
+    return { errors: [], meal: {
+      id: input.id || uid(), day: input.day || day || dayKey(),
+      type: TYPES.includes(input.type) ? input.type : 'سناك', name, cal: Math.round(cal),
+      p: clamp(input.p ?? input.protein, 500), c: clamp(input.c ?? input.carbs, 500), f: clamp(input.f ?? input.fat, 500),
+      source: input.source || 'manual', needsReview: !!input.needsReview } };
+  }
+  function searchDishes(q, limit = 8) {
+    const nq = normalizeAr(q);
+    return DISHES.filter(d => !nq || normalizeAr(d.name).includes(nq)).slice(0, limit);
+  }
+  function dishToInput(dish, portion = 'medium') {
+    return { name: dish.name, cal: Math.round(dish.kcal * (PORTIONS[portion] || 1)), type: dish.type, source: 'dish' };
+  }
+  function editMeal(meals, id, changes) {
+    const old = meals.find(m => m.id === id);
+    if (!old) return { errors: ['الوجبة مش موجودة'] };
+    const r = makeMeal({ ...old, ...changes, id, day: old.day }, old.day);
+    if (r.errors.length) return r;
+    return { errors: [], meals: meals.map(m => m.id === id ? r.meal : m) };
+  }
+  function removeMeal(meals, id) {       // بترجع الوجبة المحذوفة عشان تقدر ترجعها (undo)
+    const removed = meals.find(m => m.id === id);
+    return { meals: meals.filter(m => m.id !== id), removed: removed || null };
+  }
+
+  // ---------- استيراد رد الـAI ----------
+  function parseAIResult(text) {
+    const raw = String(text || '').replace(/```(?:json)?/gi, '').trim();
+    let j;
+    try { j = JSON.parse(raw); } catch (e) { return { errors: ['الرد مش JSON صحيح، انسخه كما هو من الـAI'] }; }
+    const name = String(j.name || '').trim(), cal = Number(j.calories), errors = [];
+    if (!name) errors.push('الرد مفيهوش اسم أكلة');
+    if (!(cal >= 0 && cal <= 3000)) errors.push('السعرات في الرد مش منطقية');
+    if (errors.length) return { errors };
+    const confidence = ['high', 'medium', 'low'].includes(j.confidence) ? j.confidence : 'low';
+    return { errors: [], confidence, ingredients: Array.isArray(j.ingredients) ? j.ingredients.slice(0, 15).map(String) : [],
+      draft: { name, cal, protein: j.protein, carbs: j.carbs, fat: j.fat, source: 'ai', needsReview: confidence !== 'high' } };
+  }
+
+  // ---------- الإحصائيات ----------
+  const dayMeals = (meals, day) => meals.filter(m => m.day === day);
+  function dayTotals(meals, day) {
+    return dayMeals(meals, day).reduce((s, m) => ({ cal: s.cal + m.cal, p: s.p + m.p, c: s.c + m.c, f: s.f + m.f }), { cal: 0, p: 0, c: 0, f: 0 });
+  }
+  const mainLogged = (meals, day) => new Set(dayMeals(meals, day).map(m => m.type).filter(t => MAIN.includes(t))).size;
+  function streak(meals, today) {
+    const days = new Set(meals.map(m => m.day));
+    let d = days.has(today) ? today : addDays(today, -1);   // اليوم لسه ما خلصش، فمش بنكسر السلسلة
+    let s = 0;
+    while (days.has(d)) { s++; d = addDays(d, -1); }
+    return s;
+  }
+  function addWeight(weights, value, day) {
+    if (!(value >= 30 && value <= 300)) return { errors: ['الوزن بين 30 و300 كجم'] };
+    const list = weights.filter(w => w.day !== day).concat({ day, v: Math.round(value * 10) / 10 });
+    return { errors: [], weights: list.sort((a, b) => (a.day < b.day ? -1 : 1)) };
+  }
+  // التغيّر في الوزن بالكيلو في الأسبوع (انحدار خطي على آخر N يوم)
+  function weightSlopePerWeek(weights, today, windowDays = 14) {
+    const pts = weights.filter(w => { const ago = daysBetween(w.day, today); return ago >= 0 && ago < windowDays; })
+      .map(w => ({ x: -daysBetween(w.day, today), y: w.v }));
+    if (pts.length < 2) return null;
+    const mx = pts.reduce((s, p) => s + p.x, 0) / pts.length, my = pts.reduce((s, p) => s + p.y, 0) / pts.length;
+    const den = pts.reduce((s, p) => s + (p.x - mx) ** 2, 0);
+    if (!den) return null;
+    const slope = pts.reduce((s, p) => s + (p.x - mx) * (p.y - my), 0) / den;
+    return Math.round(slope * 7 * 100) / 100;
+  }
+  function forecastMonthEnd(weights, today, slopePerWeek) {
+    if (slopePerWeek == null || !weights.length) return null;
+    const last = weights[weights.length - 1].v;
+    const [y, m] = today.split('-').map(Number);
+    const left = new Date(y, m, 0).getDate() - Number(today.split('-')[2]);
+    return Math.round((last + slopePerWeek * left / 7) * 10) / 10;
+  }
+
+  // ---------- الأمان ----------
+  // لو أكل قليل جدًا في 3 أيام من آخر 7، بنوقف الضغط على الهدف ونقترح مختص
+  function safetyCheck(meals, profile, today) {
+    const floor = FLOOR[profile.gender] || 1200;
+    let low = 0;
+    for (let i = 0; i < 7; i++) {
+      const d = addDays(today, -i);
+      if (dayMeals(meals, d).length && dayTotals(meals, d).cal < floor * 0.7) low++;
+    }
+    if (low >= 3) return { flag: true, goalOverride: 'maintain',
+      message: 'لاحظت إن أكلك كان قليل في أكتر من يوم. الجسم محتاج طاقة كفاية، فهنوقف الهدف الحالي ونركز على انتظام الوجبات. لو ده متكرر، كلّم دكتور أو أخصائي تغذية.' };
+    return { flag: false };
+  }
+
+  // ---------- التذكير ----------
+  function reminderDecision(now, meals, prefs, lastReminderDay) {
+    const today = dayKey(now), h = now.getHours();
+    if (!prefs.reminderOn) return { show: false, reason: 'off' };
+    if (h >= prefs.quietStart || h < prefs.quietEnd) return { show: false, reason: 'quiet' };
+    if (h < prefs.reminderHour) return { show: false, reason: 'early' };
+    if (mainLogged(meals, today) > 0) return { show: false, reason: 'logged' };
+    if (lastReminderDay === today) return { show: false, reason: 'already' };
+    return { show: true, reason: 'ok' };
+  }
+  const DEFAULT_PREFS = { reminderOn: true, reminderHour: 14, quietStart: 23, quietEnd: 7 };
+
+  // ---------- التقرير الأسبوعي ----------
+  function weeklyReport(meals, weights, today) {
+    const days = [0, 1, 2, 3, 4, 5, 6].map(i => addDays(today, -i));
+    const logged = days.filter(d => dayMeals(meals, d).length);
+    const avg = logged.length ? Math.round(logged.reduce((s, d) => s + dayTotals(meals, d).cal, 0) / logged.length) : 0;
+    return { loggedDays: logged.length, avgCalories: avg, streak: streak(meals, today),
+      weightChangePerWeek: weightSlopePerWeek(weights, today, 7) };
+  }
+
+  // ---------- الحفظ والتصدير والاستيراد ----------
+  function migrate(d) {
+    return {
+      version: VERSION,
+      profile: d.profile || {},
+      meals: (d.meals || []).map(m => ({ ...m, id: m.id || uid(), day: m.day || dayKey(),
+        type: TYPES.includes(m.type) ? m.type : 'سناك', cal: Number(m.cal) || 0,
+        p: +m.p || 0, c: +m.c || 0, f: +m.f || 0, source: m.source || 'manual' })),
+      weights: (d.weights || []).filter(w => w.v >= 30 && w.v <= 300).map(w => ({ day: w.day || dayKey(), v: w.v })),
+      prefs: { ...DEFAULT_PREFS, ...(d.prefs || {}) },
+      lastReminderDay: d.lastReminderDay || null
+    };
+  }
+  function exportData(state) {
+    return JSON.stringify({ app: 'vitalis', version: VERSION, exportedAt: new Date().toISOString(), data: state }, null, 2);
+  }
+  function importData(text) {
+    let o;
+    try { o = JSON.parse(text); } catch (e) { return { errors: ['الملف مش صالح'] }; }
+    if (!o || o.app !== 'vitalis' || !o.data) return { errors: ['ده مش ملف Vitalis'] };
+    if (!Array.isArray(o.data.meals) || !Array.isArray(o.data.weights)) return { errors: ['الملف ناقص بيانات'] };
+    return { errors: [], state: migrate(o.data) };
+  }
+
+  const api = { VERSION, TYPES, MAIN, FLOOR, DISHES, PORTIONS, DEFAULT_PREFS,
+    dayKey, addDays, daysBetween, uid, normalizeAr,
+    validateProfile, calcTargets, makeMeal, editMeal, removeMeal, searchDishes, dishToInput,
+    parseAIResult, dayMeals, dayTotals, mainLogged, streak, addWeight, weightSlopePerWeek,
+    forecastMonthEnd, safetyCheck, reminderDecision, weeklyReport, migrate, exportData, importData };
+  root.Vitalis = api;
+  if (typeof module !== 'undefined') module.exports = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this);
+
+</script>
+<script>
+/* شكل الشخصية: جسم كامل (راس، رقبة، صدر، بطن، إيدين، رجلين)، بيتحدد من الجنس والعمر والطول والبنية.
+   مش بيحكم على الجسم، والشكل بيفضل ودود ومتناسق. */
+(function (root) {
+  'use strict';
+  const BUILD = {
+    slim:     { W: 24, Wa: 16, H: 20, belly: 0, arm: 6.5, leg: 10 },
+    standard: { W: 30, Wa: 21, H: 25, belly: 4, arm: 8,   leg: 13 },
+    sturdy:   { W: 36, Wa: 26, H: 30, belly: 9, arm: 9.5, leg: 16 }
+  };
+  const SCALE_Y = { short: 0.94, medium: 1, tall: 1.04 };
+  const SKIN = '#f1c9a5', SKIN_SHADE = '#dcae86', INK = '#222';
+
+  function avatarSpec(p) {
+    const gender = p.gender === 'm' ? 'm' : 'f';
+    const age = +p.age || 30;
+    const ageGroup = age < 30 ? 'young' : age < 45 ? 'adult' : 'mature';
+    const hM = (+p.height || 170) / 100, w = +p.weight || 70;
+    const bmi = w / (hM * hM);
+    const auto = bmi < 18.5 ? 'slim' : bmi < 27 ? 'standard' : 'sturdy';
+    const build = ['slim', 'standard', 'sturdy'].includes(p.buildOverride) ? p.buildOverride : auto;
+    const cm = hM * 100;
+    const heightClass = cm < 165 ? 'short' : cm < 180 ? 'medium' : 'tall';
+    return { gender, ageGroup, build, heightClass, auto };
+  }
+
+  function avatarSVG(mood, profile) {
+    const s = avatarSpec(profile || {});
+    const f = s.gender === 'f';
+    const b = BUILD[s.build];
+    const W = b.W + (f ? -3 : 4), Wa = b.Wa + (f ? -2 : 0), H = b.H + (f ? 3 : 0);
+    const belly = f ? b.belly * 0.5 : b.belly;
+    const shirt = f ? '#7c5cff' : '#3d6bff';
+    const shorts = f ? '#2e3a59' : '#26324d';
+    const shoe = '#2b2b33';
+    const hairCol = s.ageGroup === 'young' && !f ? '#3a2a1f' : '#2b1d16';
+    const sy = SCALE_Y[s.heightClass];
+    const X = d => (100 + d).toFixed(1);
+    const P = (dx, y) => `${X(dx)} ${y}`;
+    const path = pts => 'M' + pts.map(q => `${q[0].toFixed(1)} ${q[1].toFixed(1)}`).join(' L');
+    const happy = mood === 'happy' || mood === 'proud';
+
+    // الجذع (التيشرت): كتف، صدر، بطن، حوض
+    const torso = `M${P(-W, 74)} Q100 62 ${P(W, 74)} Q${X(W + 2)} 112 ${P(Wa + belly, 140)} Q${X(H)} 160 ${P(H, 172)} L${P(-H, 172)} Q${X(-H)} 160 ${P(-(Wa + belly), 140)} Q${X(-W - 2)} 112 ${P(-W, 74)}Z`;
+
+    // الإيد: كم قصير + ذراع + كف
+    const arm = sg => {
+      const sh = [100 + sg * (W + 1), 80], el = [100 + sg * (W + 7), 128], wr = [100 + sg * (W + 9), 170];
+      const sleeveEnd = [100 + sg * (W + 4), 104];
+      return {
+        sh,
+        skin: `<path d="${path([sleeveEnd, el, wr])}" stroke="${SKIN}" stroke-width="${b.arm}" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`,
+        hand: `<circle cx="${wr[0].toFixed(1)}" cy="${wr[1] + 6}" r="${(b.arm * 0.85).toFixed(1)}" fill="${SKIN}"/>`,
+        sleeve: `<path d="${path([sh, sleeveEnd])}" stroke="${shirt}" stroke-width="${b.arm + 4}" stroke-linecap="round" fill="none"/>`
+      };
+    };
+    const R = arm(1), L = arm(-1);
+    const rightArm = `<g class="${happy ? 'wave' : ''}" style="transform-origin:${R.sh[0].toFixed(1)}px ${R.sh[1]}px">${R.skin}${R.hand}${R.sleeve}</g>`;
+    const leftArm = `${L.skin}${L.hand}${L.sleeve}`;
+
+    // الرجلين: الشورت لحد نص الفخد، وبعدين الرجل والقدم
+    const leg = sg => {
+      const hip = [100 + sg * (H - 7), 168], kn = [100 + sg * (H - 5), 222], an = [100 + sg * (H - 6), 262];
+      const mid = [hip[0] + (kn[0] - hip[0]) * 0.55, hip[1] + (kn[1] - hip[1]) * 0.55];
+      return `<path d="${path([hip, kn, an])}" stroke="${SKIN}" stroke-width="${(b.leg * 0.9).toFixed(1)}" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`
+        + `<path d="${path([hip, mid])}" stroke="${shorts}" stroke-width="${b.leg + 4}" stroke-linecap="round" fill="none"/>`
+        + `<ellipse cx="${(an[0] + sg * 2).toFixed(1)}" cy="274" rx="9" ry="5" fill="${shoe}"/>`;
+    };
+
+    // الراس والوش
+    const hairBack = f ? `<path d="M74 44Q70 12 100 12Q130 12 126 44L130 84Q100 92 70 84Z" fill="${hairCol}"/>` : '';
+    const hairFront = f
+      ? `<path d="M76 36Q80 14 100 16Q120 14 124 36Q106 26 76 36Z" fill="${hairCol}"/>`
+      : `<path d="M76 40Q76 16 100 16Q124 16 124 40Q112 28 100 28Q88 28 76 40Z" fill="${hairCol}"/>`;
+    const grey = s.ageGroup === 'mature'
+      ? '<path d="M78 34Q82 26 86 30M122 34Q118 26 114 30" stroke="#c9c9d1" stroke-width="4" fill="none" stroke-linecap="round"/>' : '';
+    const beard = (!f && s.ageGroup !== 'young')
+      ? '<path d="M80 50Q100 74 120 50Q114 60 100 62Q86 60 80 50Z" fill="#3a2a1f" opacity=".75"/>' : '';
+    const eyes = mood === 'sleep'
+      ? `<path d="M90 42h7M103 42h7" stroke="${INK}" stroke-width="2.6" stroke-linecap="round"/>`
+      : happy
+        ? `<path d="M90 44q4-5 8 0M102 44q4-5 8 0" stroke="${INK}" stroke-width="2.6" fill="none" stroke-linecap="round"/>`
+        : `<g class="blink"><circle cx="94" cy="42" r="2.8" fill="${INK}"/><circle cx="106" cy="42" r="2.8" fill="${INK}"/></g>`;
+    const mouth = happy
+      ? `<path d="M92 54q8 6 16 0" stroke="${INK}" stroke-width="2.6" fill="none" stroke-linecap="round"/>`
+      : mood === 'sleep'
+        ? `<circle cx="100" cy="56" r="2.4" fill="${INK}"/>`
+        : `<path d="M94 55h12" stroke="${INK}" stroke-width="2.6" stroke-linecap="round"/>`;
+    const bust = f
+      ? `<circle cx="${X(-9)}" cy="98" r="6" fill="#000" opacity=".12"/><circle cx="${X(9)}" cy="98" r="6" fill="#000" opacity=".12"/>` : '';
+
+    const figure = `
+      ${leftArm}
+      ${leg(-1)}${leg(1)}
+      <path d="${torso}" fill="${shirt}"/>
+      ${bust}
+      <ellipse cx="100" cy="146" rx="${10 + belly}" ry="8" fill="#000" opacity="${belly ? 0.07 : 0}"/>
+      ${rightArm}
+      <rect x="93" y="58" width="14" height="18" rx="5" fill="${SKIN_SHADE}"/>
+      ${hairBack}
+      <circle cx="76" cy="44" r="4.5" fill="${SKIN}"/><circle cx="124" cy="44" r="4.5" fill="${SKIN}"/>
+      <circle cx="100" cy="42" r="24" fill="${SKIN}"/>
+      ${hairFront}${grey}${beard}${eyes}${mouth}
+      <circle cx="84" cy="50" r="3.5" fill="#ff8fa3" opacity=".5"/><circle cx="116" cy="50" r="3.5" fill="#ff8fa3" opacity=".5"/>`;
+
+    return `<svg viewBox="0 0 200 292" xmlns="http://www.w3.org/2000/svg" data-hair="${f ? 'long' : 'short'}" data-build="${s.build}">
+      <ellipse cx="100" cy="282" rx="44" ry="6" fill="#000" opacity=".12"/>
+      <g transform="translate(0 ${(280 * (1 - sy)).toFixed(2)}) scale(1 ${sy})">${figure}</g>
+    </svg>`;
+  }
+
+  root.VitalisAvatar = { avatarSpec, avatarSVG };
+  if (typeof module !== 'undefined') module.exports = root.VitalisAvatar;
+})(typeof globalThis !== 'undefined' ? globalThis : this);
+
+</script>
+<script>
+const DISHES=[['فول بالزيت',250,'فطار'],['فول بالطحينة والعيش',380,'فطار'],['طعمية (3 قطع)',220,'فطار'],['ساندوتش طعمية',350,'فطار'],['بيض مقلي (بيضتين)',200,'فطار'],['جبنة قريش وطماطم',150,'فطار'],['كشري وسط',450,'غداء'],['كشري صغير',300,'غداء'],['محشي (4 قطع)',320,'غداء'],['ملوخية بالفراخ والأرز',520,'غداء'],['أرز بالشعرية',350,'غداء'],['فراخ مشوية وأرز',600,'غداء'],['حواوشي',450,'غداء'],['فتة',650,'غداء'],['مسقعة',400,'غداء'],['حمام محشي',500,'غداء'],['شاورما فراخ',550,'سناك'],['فطير مشلتت (شريحة)',350,'سناك'],['سلطة بلدي',80,'سناك'],['تمر (5 حبات)',140,'سناك'],['بليلة',400,'سناك'],['أم علي (حصة)',600,'سناك']];
+const KEY='vitalis_v1', FALLBACK_GOAL=2000, MAIN=['فطار','غداء','عشاء'];
+const $=id=>document.getElementById(id);
+const n=x=>Math.round(+x||0).toLocaleString('en-US');
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ICO={plus:'<path d="M12 5v14M5 12h14"/>',up:'<path d="M12 19V5M6 11l6-6 6 6"/>',down:'<path d="M12 5v14M6 13l6 6 6-6"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',cal:'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/>',target:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',heart:'<path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/>',trend:'<path d="M3 17l6-6 4 4 8-8M15 7h6v6"/>',doc:'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/>',chart:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>'};
+const ic=(k,c='#3d6bff')=>`<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICO[k]}</svg>`;
+function todayKey(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+const SEED=[{name:'فول وعيش بلدي',cal:420,p:18,c:62,f:10,type:'فطار',emoji:'🥣'},{name:'فراخ وأرز',cal:610,p:45,c:70,f:14,type:'غداء',emoji:'🍗'},{name:'ثمرة فاكهة',cal:90,p:1,c:22,f:0,type:'سناك',emoji:'🍎'}];
+let state={meals:[],weights:[],profile:{}};
+let saved=null;try{saved=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){}
+if(saved)state={...state,...saved};else state.meals=SEED.map(m=>({...m,day:todayKey()}));
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+function showToast(msg){const t=$('toast');t.textContent=msg;t.style.display='block';clearTimeout(window.tt);window.tt=setTimeout(()=>t.style.display='none',2200)}
+function go(v){
+  document.querySelectorAll('.view').forEach(e=>e.classList.toggle('on',e.id===v));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.v===v));
+  window.scrollTo(0,0);
+  const r={home:renderHome,meals:renderMeals,progress:renderProgress,settings:fillProfile}[v];
+  if(r)r();
+}
+function todayMeals(){return state.meals.filter(m=>m.day===todayKey())}
+function totals(){return todayMeals().reduce((s,m)=>({cal:s.cal+(+m.cal||0),p:s.p+(+m.p||0),c:s.c+(+m.c||0),f:s.f+(+m.f||0)}),{cal:0,p:0,c:0,f:0})}
+function calcGoal(p){
+  const w=+p.weight,h=+p.height,a=+p.age;if(!w||!h||!a||!p.gender)return null;
+  const bmr=10*w+6.25*h-5*a+(p.gender==='m'?5:-161);
+  const act={low:1.2,medium:1.45,high:1.7}[p.activity]||1.2;
+  let t=bmr*act;if(p.goal==='loss')t-=500;
+  return Math.round(Math.max(p.gender==='m'?1500:1200,t)/10)*10;
+}
+function goal(){return calcGoal(state.profile)||FALLBACK_GOAL}
+function lastW(){const w=state.weights;return w.length?w[w.length-1].v:(+state.profile.weight||null)}
+function startW(){return state.weights.length?state.weights[0].v:(+state.profile.weight||null)}
+function daysLeftInMonth(){const d=new Date();return new Date(d.getFullYear(),d.getMonth()+1,0).getDate()-d.getDate()}
+function row(k,c,label,val,vc,action){
+  const tag=action?'button':'div';
+  return `<${tag} class="row"${action?` onclick="go('${action}')"`:''}>${ic(k,c)}<span class="lbl">${label}</span>${val?`<span class="val" style="color:${vc||'var(--mut)'}">${val}</span>`:''}${action?'<span class="chev">‹</span>':''}</${tag}>`;
+}
+function renderHome(){
+  const t=totals(),g=goal(),rem=Math.max(0,g-t.cal),pct=Math.min(100,Math.round(t.cal/g*100));
+  const w=lastW(),tw=+state.profile.target,sw=startW();
+  $('dateTxt').textContent=new Date().toLocaleDateString('ar-EG',{weekday:'long',day:'numeric',month:'long'});
+  $('chips').innerHTML=`<span class="chip">🔥 ${n(t.cal)} سعرة</span><span class="chip">🎯 ${n(rem)} متبقية</span>`+(w?`<span class="chip">⚖️ ${w} كجم</span>`:'');
+  $('pctTxt').textContent=`استهلكت ${pct}% من هدف اليوم`;
+  $('ring').style.setProperty('--d',pct*3.6+'deg');
+  const days=(w&&tw&&w>tw)?Math.ceil((w-tw)/0.5*7):null;
+  let drop=state.profile.goal==='loss'?0.5*(daysLeftInMonth()/7):0;
+  if(w&&tw)drop=Math.min(drop,Math.max(0,w-tw));
+  const fc=w?(w-drop).toFixed(1)+' كجم':'—';
+  $('g1').innerHTML=
+    row('plus','#3d6bff','إضافة وجبة','','','add')+
+    row('up','#ff9500','السعرات المستهلكة',n(t.cal)+' سعرة','#ff9500','meals')+
+    row('down','#34c759','المتبقي للهدف',n(rem)+' سعرة','#34c759')+
+    row('user','#af52de','البروتين اليوم',n(t.p)+' جم','#af52de');
+  $('g2').innerHTML=
+    row('cal','#3d6bff','الأيام المتبقية للهدف',days!=null?n(days)+' يوم':'حدد وزنك المستهدف')+
+    row('target','#3d6bff','المتاح يوميًا تقريبًا',n(g)+' سعرة')+
+    row('target','#34c759','الوزن المحقق',(sw&&w)?(sw-w).toFixed(1)+' كجم':'—','#34c759')+
+    row('heart','#ff3b30','الكارب اليوم',n(t.c)+' جم','#ff3b30');
+  $('g3').innerHTML=
+    row('trend','#3d6bff','توقع الوزن نهاية الشهر',fc)+
+    row('doc','#3d6bff','سجل الوجبات',todayMeals().length+' وجبة','','meals')+
+    row('chart','#3d6bff','متابعة الوزن',state.weights.length+' قياس','','progress');
+}
+function renderMeals(){
+  const rows=state.meals.map((m,i)=>({m,i})).filter(x=>x.m.day===todayKey());
+  $('mealList').innerHTML=rows.map(({m,i})=>`<div class="row"><span class="emo">${m.emoji||'🍽️'}</span><span class="lbl">${esc(m.type)} — ${esc(m.name)}<small>${(m.p||m.c||m.f)?`بروتين ${+m.p||0} • كارب ${+m.c||0} • دهون ${+m.f||0} جم`:'تقدير تقريبي'}</small></span><span class="val">${n(m.cal)} سعرة</span><button class="del" onclick="removeMeal(${i})">حذف</button></div>`).join('')
+    ||'<div class="row"><span class="lbl" style="color:var(--mut)">لسه مفيش وجبات النهارده</span></div>';
+}
+function num(id){return Math.max(0,Number($(id).value)||0)}
+function addMeal(){
+  const name=$('foodName').value.trim(),cal=Number($('foodCalories').value),type=$('mealType').value;
+  if(!name||!Number.isFinite(cal)||cal<=0||cal>5000){showToast('اكتب اسم الوجبة وسعرات صحيحة');return}
+  state.meals.push({name,cal,p:num('foodP'),c:num('foodC'),f:num('foodF'),type,emoji:'🍽️',day:todayKey()});
+  persist();['foodName','foodCalories','foodP','foodC','foodF'].forEach(id=>$(id).value='');
+  showToast('اتضافت الوجبة');go('home');
+}
+function removeMeal(i){state.meals.splice(i,1);persist();renderMeals();showToast('تم الحذف')}
+function saveWeight(){
+  const v=Number($('weight').value);
+  if(!Number.isFinite(v)||v<20||v>400){showToast('اكتب وزنًا صحيحًا بالكيلوجرام');return}
+  const e={v,day:todayKey(),date:new Date().toLocaleDateString('ar-EG')};
+  const last=state.weights[state.weights.length-1];
+  if(last&&last.day===e.day)state.weights[state.weights.length-1]=e;else state.weights.push(e);
+  persist();$('weight').value='';renderProgress();showToast('تم حفظ الوزن');
+}
+function renderProgress(){
+  const w=state.weights.slice(-10);
+  if(w.length){
+    const min=Math.min(...w.map(x=>x.v)),max=Math.max(...w.map(x=>x.v));
+    $('wChart').innerHTML=`<div class="bars">${w.map(x=>`<div class="bar" style="height:${20+((x.v-min)/((max-min)||1))*100}px"><span>${x.v}</span></div>`).join('')}</div>`;
+  }else $('wChart').innerHTML='<div class="row"><span class="lbl" style="color:var(--mut)">سجّل أول وزن عشان تبدأ تشوف الرسم</span></div>';
+  const done=new Set(todayMeals().map(m=>m.type).filter(x=>MAIN.includes(x))).size;
+  $('wProg').innerHTML=row('target','#34c759','وجبات رئيسية مسجلة اليوم',done+' من 3','#34c759');
+  $('wHist').innerHTML=state.weights.slice().reverse().map(x=>`<div class="row">${ic('chart')}<span class="lbl">${x.v} كجم</span><span class="val">${esc(x.date)}</span></div>`).join('');
+}
+function fillProfile(){
+  const p=state.profile,set=(id,v)=>{if(v!==undefined&&v!=='')$(id).value=v};
+  set('gender',p.gender);set('age',p.age);set('height',p.height);set('pWeight',p.weight);set('target',p.target);set('activity',p.activity);set('goal',p.goal);
+}
+function saveProfile(){
+  const v=id=>$(id).value;
+  state.profile={gender:v('gender'),age:v('age'),height:v('height'),weight:v('pWeight'),target:v('target'),activity:v('activity'),goal:v('goal')};
+  persist();const g=calcGoal(state.profile);
+  showToast(g?'هدفك التقديري: '+n(g)+' سعرة/يوم':'اكمل النوع والعمر والطول والوزن');
+}
+function clearData(){if(!confirm('هتتمسح كل البيانات من الجهاز. متأكد؟'))return;try{localStorage.removeItem(KEY)}catch(e){}location.reload()}
+
+function dk(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function streakDays(){
+  const days=new Set(state.meals.map(m=>m.day)),d=new Date();
+  d.setDate(d.getDate()-(days.has(dk(d))?0:1));
+  let s=0;while(days.has(dk(d))){s++;d.setDate(d.getDate()-1)}
+  return s;
+}
+function vitaSVG(mood,gender){
+  const f=gender==='f';
+  const hair=f?'<path d="M50 70Q48 24 80 22Q112 24 110 70L114 112Q96 104 92 92L68 92Q64 104 46 112Z" fill="#2b1d16"/>'
+              :'<path d="M52 62Q54 30 80 30Q106 30 108 62Q98 46 80 46Q62 46 52 62Z" fill="#2b1d16"/>';
+  const happy=mood==='happy'||mood==='proud';
+  const eyes=mood==='sleep'?'<path d="M66 72h10M84 72h10" stroke="#222" stroke-width="3" stroke-linecap="round"/>'
+    :happy?'<path d="M66 72q5-6 10 0M84 72q5-6 10 0" stroke="#222" stroke-width="3" fill="none" stroke-linecap="round"/>'
+    :'<g class="blink"><circle cx="71" cy="70" r="3.5" fill="#222"/><circle cx="89" cy="70" r="3.5" fill="#222"/></g>';
+  const mouth=happy?'<path d="M72 84q8 9 16 0" stroke="#222" stroke-width="3" fill="none" stroke-linecap="round"/>'
+    :mood==='sleep'?'<circle cx="80" cy="86" r="3" fill="#222"/>'
+    :'<path d="M73 86h14" stroke="#222" stroke-width="3" stroke-linecap="round"/>';
+  return `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+    <rect x="56" y="100" width="48" height="46" rx="20" fill="#3d6bff"/>
+    <g class="${happy?'wave':''}"><rect x="100" y="106" width="12" height="32" rx="6" fill="#3d6bff"/></g>
+    <rect x="62" y="100" width="36" height="8" rx="4" fill="#ffffff" opacity=".35"/>
+    ${hair}
+    <circle cx="80" cy="66" r="28" fill="#ffd9b8"/>
+    ${eyes}${mouth}
+    <circle cx="62" cy="80" r="5" fill="#ff8fa3" opacity=".5"/><circle cx="98" cy="80" r="5" fill="#ff8fa3" opacity=".5"/>
+  </svg>`;
+}
+function renderMascot(){
+  const t=totals(),g=goal(),hasMeals=todayMeals().length>0,st=streakDays(),h=new Date().getHours();
+  const main=new Set(todayMeals().map(m=>m.type).filter(x=>MAIN.includes(x))).size;
+  let mood,msg;
+  if(!hasMeals){mood='sleep';msg=h>=14?'الساعة بقت كذا ولسه مفيش وجبات. سجّل اللي أكلته ولو بالتقريب 🌿':'صباح الفل! أنا ميزو، ابدأ بفطارك وأنا معاك 🌿';}
+  else if(t.cal>g*1.1){mood='neutral';msg='تجاوزت هدف النهارده شوية، ومفيش مشكلة. بكرة يوم جديد، امشي براحة.';}
+  else if(st>=3){mood='proud';msg=`سلسلة ${st} أيام متتالية، أنا فخورة بيك 🔥`;}
+  else if(main>=3){mood='happy';msg='سجّلت الوجبات الرئيسية كلها، ممتاز 👏';}
+  else{mood='happy';msg='ماشي صح! كمّل كده، ومتنساش الوجبة الجاية.';}
+  $('vita').innerHTML=vitaSVG(mood,state.profile.gender);
+  $('bubble').textContent=msg;
+}
+function renderDishes(){
+  const q=($('dishSearch').value||'').trim();
+  const list=DISHES.map((d,i)=>({d,i})).filter(x=>!q||x.d[0].includes(q)).slice(0,8);
+  $('dishList').innerHTML=list.map(({d,i})=>`<button class="dish" onclick="pickDish(${i})"><span>${d[0]}</span><small>≈ ${n(d[1])} سعرة</small></button>`).join('')
+    ||(q?'<div class="note">مش موجودة؟ صوّر الأكل واطلب تحليله من أي AI من تحت</div>':'');
+}
+function pickDish(i){
+  const d=DISHES[i];
+  $('foodName').value=d[0];$('foodCalories').value=d[1];$('mealType').value=d[2];
+  $('dishSearch').value='';renderDishes();showToast('اتملت بيانات '+d[0]+'، راجع الحجم واحفظ');
+}
+const AI_PROMPT='صورة أكل من مصر. عرّفني اسم الأكل بالعربي لو معروف، ومكوناته الأساسية، وحجم الحصة التقريبي، وتقدير السعرات والبروتين والكارب والدهون بالجرام. لو مش متأكد قول ذلك وخلي confidence = "low". رجّع الرد JSON بس بدون أي كلام زيادة وبالشكل ده: {"name":"","ingredients":[],"portion":"","calories":0,"protein":0,"carbs":0,"fat":0,"confidence":"high|medium|low"}';
+async function copyPhotoPrompt(){
+  try{await navigator.clipboard.writeText(AI_PROMPT);showToast('اتنسخ الطلب. الصقه مع صورة الأكل في أي AI، وبعدين الصق الرد تحت')}
+  catch(e){$('aiJson').value=AI_PROMPT;showToast('انسخ النص اللي في الخانة واستخدمه مع صورتك')}
+}
+function importAI(){
+  const raw=($('aiJson').value||'').trim().replace(/```json|```/g,'');
+  try{
+    const j=JSON.parse(raw);
+    $('foodName').value=j.name||'';$('foodCalories').value=j.calories||'';
+    $('foodP').value=j.protein||'';$('foodC').value=j.carbs||'';$('foodF').value=j.fat||'';
+    $('aiJson').value='';
+    showToast(j.confidence==='low'?'التقدير مش أكيد، راجع الاسم والسعرات قبل ما تحفظ':'اتملت البيانات، راجعها واحفظ');
+  }catch(e){showToast('الرد مش JSON صحيح، انسخه كما هو من الـAI')}
+}
+const _goOld=go;
+go=function(v){_goOld(v);if(v==='home')renderMascot();if(v==='add')renderDishes();if(window.syncReminder)syncReminder(state.meals,state.prefs)};
+/* ===== ربط الواجهة بالمنطق (Vitalis core) ===== */
+let pendingReview=false, lastRemoved=null;
+function calcGoal(p){const r=Vitalis.calcTargets(p);return r.errors.length?null:r.calories}
+function streakDays(){return Vitalis.streak(state.meals,todayKey())}
+function fillProfile(){
+  const p=state.profile,set=(id,v)=>{if(v!==undefined&&v!=='')$(id).value=v};
+  set('gender',p.gender);set('age',p.age);set('height',p.height);set('pWeight',p.weight);set('target',p.target);set('activity',p.activity);set('goal',p.goal);set('buildOverride',p.buildOverride);
+}
+function saveProfile(){
+  const v=id=>$(id).value;
+  const p={gender:v('gender'),age:v('age'),height:v('height'),weight:v('pWeight'),target:v('target'),activity:v('activity'),goal:v('goal'),buildOverride:v('buildOverride')};
+  const r=Vitalis.calcTargets(p);
+  if(r.errors.length)return showToast(r.errors[0]);
+  state.profile=p;persist();updateTotals();renderMascot();
+  showToast('هدفك: '+n(r.calories)+' سعرة/يوم'+(r.weeksToTarget?' • تقريبًا في '+r.weeksToTarget+' أسبوع':''));
+  if(r.warnings.length)setTimeout(()=>showToast(r.warnings[0]),2600);
+}
+function renderDishes(){
+  const q=($('dishSearch').value||'').trim();
+  const list=Vitalis.searchDishes(q,8);
+  $('dishList').innerHTML=list.map(d=>`<button class="dish" onclick="pickDishId('${d.id}')"><span>${d.name}</span><small>≈ ${n(d.kcal)} سعرة</small></button>`).join('')
+    ||(q?'<div class="note">مش موجودة؟ صوّر الأكل واطلب تحليله من أي AI من تحت</div>':'');
+}
+function pickDishId(id){
+  const d=Vitalis.DISHES.find(x=>x.id===id);
+  $('foodName').value=d.name;$('foodCalories').value=d.kcal;$('mealType').value=d.type;
+  $('dishSearch').value='';pendingReview=false;renderDishes();
+  showToast('اتملت بيانات '+d.name+'، راجع الحجم واحفظ');
+}
+function importAI(){
+  const r=Vitalis.parseAIResult($('aiJson').value);
+  if(r.errors.length)return showToast(r.errors[0]);
+  const d=r.draft;
+  $('foodName').value=d.name;$('foodCalories').value=d.cal;
+  $('foodP').value=d.protein||'';$('foodC').value=d.carbs||'';$('foodF').value=d.fat||'';
+  $('aiJson').value='';pendingReview=d.needsReview;
+  showToast(d.needsReview?'التقدير مش أكيد، راجع الاسم والسعرات قبل ما تحفظ':'اتملت البيانات، راجعها واحفظ');
+}
+function addMeal(){
+  const r=Vitalis.makeMeal({name:$('foodName').value,cal:$('foodCalories').value,type:$('mealType').value,
+    p:$('foodP').value,c:$('foodC').value,f:$('foodF').value,source:pendingReview?'ai':'manual',needsReview:pendingReview});
+  if(r.errors.length)return showToast(r.errors[0]);
+  state.meals.push(r.meal);persist();pendingReview=false;
+  ['foodName','foodCalories','foodP','foodC','foodF'].forEach(id=>$(id).value='');
+  showToast('اتضافت الوجبة');go('home');
+}
+function renderMeals(){
+  const rows=state.meals.map((m,i)=>({m,i})).filter(x=>x.m.day===todayKey());
+  $('mealList').innerHTML=rows.map(({m,i})=>`<div class="row"><span class="emo">${m.emoji||'🍽️'}</span><span class="lbl">${esc(m.type)} — ${esc(m.name)}<small>${(m.p||m.c||m.f)?`بروتين ${m.p||0} • كارب ${m.c||0} • دهون ${m.f||0} جم`:'تقدير تقريبي'}${m.needsReview?' • محتاجة مراجعة':''}</small></span><span class="val">${n(m.cal)} سعرة</span><button class="del" style="color:var(--blue)" onclick="editMealPrompt(${i})">تعديل</button><button class="del" onclick="removeMeal(${i})">حذف</button></div>`).join('')
+    ||'<div class="row"><span class="lbl" style="color:var(--mut)">لسه مفيش وجبات النهارده</span></div>';
+}
+function editMealPrompt(i){
+  const m=state.meals[i];const v=prompt('السعرات الجديدة لـ '+m.name,m.cal);if(v===null)return;
+  const r=Vitalis.editMeal(state.meals,m.id,{cal:v});
+  if(r.errors.length)return showToast(r.errors[0]);
+  state.meals=r.meals;persist();renderMeals();updateTotals();showToast('اتعدلت الوجبة');
+}
+function removeMeal(i){
+  const r=Vitalis.removeMeal(state.meals,state.meals[i]&&state.meals[i].id);
+  state.meals=r.meals;lastRemoved=r.removed;persist();renderMeals();updateTotals();showToast('تم الحذف، تقدر تتراجع من تحت');
+}
+function undoRemove(){if(!lastRemoved)return showToast('مفيش حاجة تتراجع عنها');state.meals.push(lastRemoved);lastRemoved=null;persist();renderMeals();updateTotals();showToast('رجعت الوجبة')}
+function saveWeight(){
+  const r=Vitalis.addWeight(state.weights,$('weight').value,todayKey());
+  if(r.errors.length)return showToast(r.errors[0]);
+  state.weights=r.weights;persist();$('weight').value='';renderProgress();showToast('تم حفظ الوزن');
+}
+function renderProgress(){
+  const w=state.weights.slice(-10),vals=w.map(x=>x.v),mn=Math.min(...vals),mx=Math.max(...vals);
+  $('wChart').innerHTML=w.length?`<div class="bars">${w.map(x=>`<div class="bar" style="height:${20+((x.v-mn)/((mx-mn)||1))*100}px"><span>${x.v}</span></div>`).join('')}</div>`
+    :'<div class="row"><span class="lbl" style="color:var(--mut)">سجّل أول وزن عشان تبدأ تشوف الرسم</span></div>';
+  const rep=Vitalis.weeklyReport(state.meals,state.weights,todayKey());
+  const f=Vitalis.forecastMonthEnd(state.weights,todayKey(),rep.weightChangePerWeek);
+  const main=Vitalis.mainLogged(state.meals,todayKey());
+  $('wProg').innerHTML=row('target','#34c759','أيام سجّلتها هذا الأسبوع',rep.loggedDays+' من 7','#34c759')
+    +row('target','#34c759','وجبات رئيسية اليوم',main+' من 3','#34c759')
+    +row('cal','#3d6bff','متوسط السعرات (أيام التسجيل)',n(rep.avgCalories)+' سعرة')
+    +row('trend','#3d6bff','السلسلة الحالية',rep.streak+' يوم')
+    +row('trend','#3d6bff','التغيّر تقريبًا في الأسبوع',rep.weightChangePerWeek==null?'—':(rep.weightChangePerWeek>0?'+':'')+rep.weightChangePerWeek+' كجم')
+    +(f!=null?row('trend','#3d6bff','توقع نهاية الشهر',f+' كجم'):'');
+  $('wHist').innerHTML=state.weights.slice().reverse().map(x=>`<div class="row">${ic('chart')}<span class="lbl">${x.v} كجم</span><span class="val">${esc(x.day)}</span></div>`).join('');
+}
+function renderMascot(){
+  const today=todayKey(),t=totals(),g=goal(),st=streakDays();
+  const safety=Vitalis.safetyCheck(state.meals,state.profile,today);
+  const rem=Vitalis.reminderDecision(new Date(),state.meals,state.prefs,state.lastReminderDay);
+  let mood,msg;
+  if(safety.flag){mood='neutral';msg=safety.message}
+  else if(!todayMeals().length){mood='sleep';msg=new Date().getHours()>=14?'الساعة بقت كذا ولسه مفيش وجبات. سجّل اللي أكلته ولو بالتقريب 🌿':'صباح الفل! أنا ميزو، ابدأ بفطارك وأنا معاك 🌿'}
+  else if(t.cal>g*1.1){mood='neutral';msg='تجاوزت هدف النهارده شوية، ومفيش مشكلة. بكرة يوم جديد، امشي براحة.'}
+  else if(st>=3){mood='proud';msg=`سلسلة ${st} أيام متتالية، أنا فخورة بيك 🔥`}
+  else if(Vitalis.mainLogged(state.meals,today)>=3){mood='happy';msg='سجّلت الوجبات الرئيسية كلها، ممتاز 👏'}
+  else{mood='happy';msg='ماشي صح! كمّل كده، ومتنساش الوجبة الجاية.'}
+  if(rem.show&&mood!=='sleep'&&!safety.flag)msg='فكرة صغيرة: لسه ماسجلتش وجبة رئيسية النهارده.';
+  if(rem.show){state.lastReminderDay=today;persist();}
+  $('vita').innerHTML=VitalisAvatar.avatarSVG(mood,state.profile);
+  $('bubble').textContent=msg;
+}
+function exportBox(){$('dataBox').value=Vitalis.exportData(state);showToast('انسخ النص ده واحفظه في مكان آمن')}
+function importBox(){const r=Vitalis.importData($('dataBox').value);if(r.errors.length)return showToast(r.errors[0]);state=r.state;persist();location.reload()}
+state=Vitalis.migrate(state);persist();
+go('home');
+</script>
+<script src="native.js"></script>
+</body>
+</html>
